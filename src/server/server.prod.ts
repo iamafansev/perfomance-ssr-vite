@@ -6,7 +6,7 @@ import { resolveConfig } from "vite";
 
 const require = createRequire(import.meta.url);
 
-import { render } from "./render";
+import { render } from "server/render";
 
 type Asset = {
   src: string;

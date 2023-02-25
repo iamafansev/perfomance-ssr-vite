@@ -2,7 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import { performance } from "perf_hooks";
 
-import { printServerInfo } from "./utils/printServerInfo";
+import { printServerInfo } from "server/utils/printServerInfo";
 
 if (!globalThis.ssrStartTime) {
   globalThis.ssrStartTime = performance.now();
@@ -31,7 +31,7 @@ export const createServer = async () => {
       res
         .status(200)
         .set({ "Content-Type": "text/html" })
-        .end(await vite.transformIndexHtml('/', markup));
+        .end(await vite.transformIndexHtml(url, markup));
     } catch (e) {
       vite!.ssrFixStacktrace(e as Error);
       res.status(500).end((e as Error).stack);
