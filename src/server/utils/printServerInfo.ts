@@ -17,7 +17,7 @@ export const printServerInfo = ({
     clear: !viteServer.config.logger.hasWarned,
   });
 
-  info(`http://localhost:${port}`);
+  info(`http://${viteServer.config.server.host}:${port}`);
 
   if (globalThis.ssrStartTime) {
     ssrReadyMessage += chalk.cyan(

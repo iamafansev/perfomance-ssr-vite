@@ -4,12 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev:spa": "vite",
-    "dev": "tsx src/server/dev-server.ts",
-    "serve": "NODE_ENV=production node dist/server/server.js",
+    "dev": "tsx src/server/server.dev.ts",
+    "serve": "NODE_ENV=production node dist/server/server.prod.js",
     "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --outDir dist/server --ssr src/server/server.ts",
+    "build:server": "vite build --outDir dist/server --ssr src/server/server.prod.ts",
     "lint": "eslint './**/*.{js,ts,tsx}'"
   },
   "dependencies": {
