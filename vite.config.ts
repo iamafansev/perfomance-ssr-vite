@@ -8,7 +8,7 @@ export default defineConfig({
     assetsDir: './assets',
     manifest: true,
     rollupOptions: {
-      input: 'src/index.tsx',
+      input: 'src/client/index.tsx',
     },
   },
   server: {
