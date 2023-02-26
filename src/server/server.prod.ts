@@ -49,7 +49,6 @@ export const createServer = async () => {
   app.use("*", async (req, res) => {
     try {
       const renderResult = await render(req, res, assets);
-
       res.status(renderResult.statusCode).set({ "Content-Type": "text/html" }).end(renderResult.html);
     } catch (e) {
       res.status(500).end((e as Error).stack);
