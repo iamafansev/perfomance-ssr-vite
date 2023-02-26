@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx src/server/server.dev.ts",
-    "serve": "NODE_ENV=production node dist/server/server.prod.js",
+    "start": "tsx src/server/server.dev.ts",
+    "start:prod": "NODE_ENV=production node dist/server/server.prod.js",
     "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --outDir dist/server --ssr src/server/server.prod.ts",

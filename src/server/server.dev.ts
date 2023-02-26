@@ -1,8 +1,10 @@
 import express from "express";
+import {StatusCodes} from 'http-status-codes';
 import { createServer as createViteServer } from "vite";
 import { performance } from "perf_hooks";
 
 import { printServerInfo } from "server/utils/printServerInfo";
+import { genPipeDestinationWithTransformHtml } from "server/utils/genPipeDestinationWithTransformHtml";
 
 if (!globalThis.ssrStartTime) {
   globalThis.ssrStartTime = performance.now();
@@ -15,20 +17,22 @@ export const createServer = async () => {
   const vite = await createViteServer();
 
   app.use(vite.middlewares);
-  app.use("*", async (req, res) => {
+  app.use("*", async (request, response) => {
     try {
-      const url = req.originalUrl;
+      const url = request.originalUrl;
       const { render } = await vite!.ssrLoadModule("src/server/render.tsx") as Render;
       const entrySrc = vite.config.build.rollupOptions.input as string;
-      const renderResult = await render({url, entrySrc});
 
-      res
-        .status(renderResult.statusCode)
-        .set({ "Content-Type": "text/html" })
-        .end(await vite.transformIndexHtml(url, renderResult.html));
+      render({
+        url,
+        entrySrc,
+        response,
+        genPipeDestination: genPipeDestinationWithTransformHtml(vite.transformIndexHtml),
+        onError: vite!.ssrFixStacktrace
+      });
     } catch (e) {
       vite!.ssrFixStacktrace(e as Error);
-      res.status(500).end((e as Error).stack);
+      response.status(StatusCodes.INTERNAL_SERVER_ERROR).end((e as Error).stack);
     }
   });
 

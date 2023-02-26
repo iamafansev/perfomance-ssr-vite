@@ -3,12 +3,13 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { resolveConfig } from "vite";
+import {StatusCodes} from 'http-status-codes';
 
 const require = createRequire(import.meta.url);
 
 import { render } from "server/render";
 
-type Asset = {
+type ManifestAsset = {
   src: string;
   file: string;
 };
@@ -24,15 +25,15 @@ const manifest = require(resolveFromRoot('dist/client/manifest.json'));
 
 const prepareStyleAssets = async () => {
   return Object
-    .values<Asset>(manifest)
+    .values<ManifestAsset>(manifest)
     .filter((value) => value.src.endsWith(CSS_EXT))
-    .map((value) => ({fileName: value.file}));
+    .map((value) => value.file);
 };
 
 export const createServer = async () => {
   const styleAssets = await prepareStyleAssets();
   const config = await resolveConfig({}, 'build');
-  const entrySrc = config.build.rollupOptions.input as string;
+  const entrySrc = (manifest[config.build.rollupOptions.input as string] as ManifestAsset).file;
 
   const app = express();
 
@@ -41,13 +42,12 @@ export const createServer = async () => {
     (await import("serve-static")).default(resolveFromRoot("dist/client"))
   );
 
-  app.use("*", async (req, res) => {
+  app.use("*", async (request, response) => {
     try {
-      const url = req.originalUrl;
-      const renderResult = await render({url, styleAssets, entrySrc});
-      res.status(renderResult.statusCode).set({ "Content-Type": "text/html" }).end(renderResult.html);
+      const url = request.originalUrl;
+      render({url, styleAssets, entrySrc, response});
     } catch (e) {
-      res.status(500).end((e as Error).stack);
+      response.status(StatusCodes.INTERNAL_SERVER_ERROR).end((e as Error).stack);
     }
   });
 
