@@ -22,22 +22,17 @@ const resolveFromRoot = (p: string) => path.resolve(dirname, "..", "..", p);
 const CSS_EXT = '.css';
 const manifest = require(resolveFromRoot('dist/client/manifest.json'));
 
-const prepareAssets = async () => {
-  const config = await resolveConfig({}, 'build');
-
-  const entrySrc = config.build.rollupOptions.input as string;
-  const entry = manifest[entrySrc] as Asset;
-  const entryFile = {fileName: entry.file};
-  const stylesFiles = Object
+const prepareStyleAssets = async () => {
+  return Object
     .values<Asset>(manifest)
     .filter((value) => value.src.endsWith(CSS_EXT))
     .map((value) => ({fileName: value.file}));
-
-  return {styles: stylesFiles, scripts: [entryFile]};
-}
+};
 
 export const createServer = async () => {
-  const assets = await prepareAssets();
+  const styleAssets = await prepareStyleAssets();
+  const config = await resolveConfig({}, 'build');
+  const entrySrc = config.build.rollupOptions.input as string;
 
   const app = express();
 
@@ -48,7 +43,8 @@ export const createServer = async () => {
 
   app.use("*", async (req, res) => {
     try {
-      const renderResult = await render(req, res, assets);
+      const url = req.originalUrl;
+      const renderResult = await render({url, styleAssets, entrySrc});
       res.status(renderResult.statusCode).set({ "Content-Type": "text/html" }).end(renderResult.html);
     } catch (e) {
       res.status(500).end((e as Error).stack);

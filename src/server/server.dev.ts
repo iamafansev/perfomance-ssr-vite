@@ -19,14 +19,8 @@ export const createServer = async () => {
     try {
       const url = req.originalUrl;
       const { render } = await vite!.ssrLoadModule("src/server/render.tsx") as Render;
-      const fileName = vite.config.build.rollupOptions.input as string;
-
-      const assets = {
-        styles: [],
-        scripts: [{ fileName }],
-      };
-
-      const renderResult = await render(req, res, assets);
+      const entrySrc = vite.config.build.rollupOptions.input as string;
+      const renderResult = await render({url, entrySrc});
 
       res
         .status(renderResult.statusCode)

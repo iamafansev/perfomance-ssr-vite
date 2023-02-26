@@ -1,5 +1,5 @@
 import {Writable} from 'node:stream';
-import {Request, Response} from "express";
+import {StatusCodes} from 'http-status-codes';
 import {renderToPipeableStream} from "react-dom/server";
 import {StaticRouter} from "react-router-dom/server";
 
@@ -7,19 +7,18 @@ import {App} from "client/App";
 
 type Asset = {fileName: string};
 
-type Assets = {
-  styles: Asset[];
-  scripts: Asset[];
-}
-
-type RenderResult = {
+type RenderOutput = {
   statusCode: number;
   html: string;
 }
 
-export const render = (req: Request, res: Response, assets: Assets) => {
-  const url = req.originalUrl;
+type RenderInput = {
+  url: string;
+  styleAssets?: Asset[];
+  entrySrc: string;
+};
 
+export const render = ({url, styleAssets = [], entrySrc}: RenderInput) => {
   const wrappedApp = (
     <html>
       <head>
@@ -27,7 +26,7 @@ export const render = (req: Request, res: Response, assets: Assets) => {
         <link rel="icon" type="image/svg+xml" href="/vite.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>App</title>
-        {assets.styles.map(({ fileName }) => <link key={fileName} rel="stylesheet" href={fileName} />)}
+        {styleAssets.map(({ fileName }) => <link key={fileName} rel="stylesheet" href={fileName} />)}
       </head>
       <body>
         <div id="root">
@@ -35,14 +34,13 @@ export const render = (req: Request, res: Response, assets: Assets) => {
             <App />
           </StaticRouter>
         </div>
-        {assets.scripts.map(({ fileName }) => <script key={fileName} src={fileName} type="module" />)}
       </body>
     </html>
   );
 
-  return new Promise<RenderResult>((resolve) => {
+  return new Promise<RenderOutput>((resolve) => {
     let didError = false;
-    let renderResult: RenderResult = {html: '', statusCode: 200};
+    let renderResult: RenderOutput = {html: '', statusCode: StatusCodes.OK};
 
     const stream = new Writable({
       write(chunk: Buffer, _encoding, callback) {
@@ -55,12 +53,13 @@ export const render = (req: Request, res: Response, assets: Assets) => {
     });
 
     const {pipe} = renderToPipeableStream(wrappedApp, {
+      bootstrapModules: [entrySrc],
       onAllReady() {
-        renderResult.statusCode = 200;
+        renderResult.statusCode = StatusCodes.OK;
         pipe(stream);
       },
       onShellError() {
-        renderResult.statusCode = 500;
+        renderResult.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
         renderResult.html = '<h1>Something went wrong</h1>'; 
       },
       onError(error) {
