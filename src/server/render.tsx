@@ -1,7 +1,9 @@
-import ReactDOMServer from "react-dom/server";
-import { StaticRouter } from "react-router-dom/server";
+import {Writable} from 'node:stream';
+import {Request, Response} from "express";
+import {renderToPipeableStream} from "react-dom/server";
+import {StaticRouter} from "react-router-dom/server";
 
-import { App } from "client/App";
+import {App} from "client/App";
 
 type Asset = {fileName: string};
 
@@ -10,8 +12,15 @@ type Assets = {
   scripts: Asset[];
 }
 
-export const render = (url: string, assets: Assets) => {
-  return ReactDOMServer.renderToString(
+type RenderResult = {
+  statusCode: number;
+  html: string;
+}
+
+export const render = (req: Request, res: Response, assets: Assets) => {
+  const url = req.originalUrl;
+
+  const wrappedApp = (
     <html>
       <head>
         <meta charSet="UTF-8" />
@@ -30,4 +39,34 @@ export const render = (url: string, assets: Assets) => {
       </body>
     </html>
   );
+
+  return new Promise<RenderResult>((resolve) => {
+    let didError = false;
+    let renderResult: RenderResult = {html: '', statusCode: 200};
+
+    const stream = new Writable({
+      write(chunk: Buffer, _encoding, callback) {
+        renderResult.html += chunk.toString();
+        callback();
+      },
+      final() {
+        resolve(renderResult);
+      },
+    });
+
+    const {pipe} = renderToPipeableStream(wrappedApp, {
+      onAllReady() {
+        renderResult.statusCode = 200;
+        pipe(stream);
+      },
+      onShellError() {
+        renderResult.statusCode = 500;
+        renderResult.html = '<h1>Something went wrong</h1>'; 
+      },
+      onError(error) {
+        didError = true;
+        console.error(error);
+      }
+    });
+  });
 };

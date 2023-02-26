@@ -26,12 +26,12 @@ export const createServer = async () => {
         scripts: [{ fileName }],
       };
 
-      const markup = render(url, assets);
+      const renderResult = await render(req, res, assets);
 
       res
-        .status(200)
+        .status(renderResult.statusCode)
         .set({ "Content-Type": "text/html" })
-        .end(await vite.transformIndexHtml(url, markup));
+        .end(await vite.transformIndexHtml(url, renderResult.html));
     } catch (e) {
       vite!.ssrFixStacktrace(e as Error);
       res.status(500).end((e as Error).stack);
