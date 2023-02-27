@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { resolveConfig } from "vite";
 import {StatusCodes} from 'http-status-codes';
+import isbot from 'isbot';
 
 const require = createRequire(import.meta.url);
 
@@ -38,14 +39,12 @@ export const createServer = async () => {
   const app = express();
 
   app.use((await import("compression")).default());
-  app.use(
-    (await import("serve-static")).default(resolveFromRoot("dist/client"))
-  );
+  app.use((await import("serve-static")).default(resolveFromRoot("dist/client")));
 
   app.use("*", async (request, response) => {
     try {
       const url = request.originalUrl;
-      render({url, styleAssets, entrySrc, response});
+      render({url, styleAssets, entrySrc, response, isCrawler: isbot(request.get('user-agent'))});
     } catch (e) {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR).end((e as Error).stack);
     }

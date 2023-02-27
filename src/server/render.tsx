@@ -15,6 +15,7 @@ type RenderInput = {
   styleAssets?: DocumentProps['styleAssets'];
   entrySrc: string;
   response: Response;
+  isCrawler: boolean;
   genPipeDestination?: (response: Response, url: string) => Writable;
   onError?: (error: Error) => void;
 };
@@ -26,6 +27,7 @@ export const render = ({
   styleAssets,
   entrySrc,
   response,
+  isCrawler,
   onError = console.error,
   genPipeDestination = defaultGenPipeDestination
 }: RenderInput) => {
@@ -39,12 +41,23 @@ export const render = ({
 
   let didError = false;
 
+  const destination = genPipeDestination(response, url);
+
   const {pipe} = renderToPipeableStream(wrappedApp, {
     bootstrapModules: [entrySrc],
     onAllReady() {
-      response.statusCode = StatusCodes.OK;
-      response.setHeader('content-type', 'text/html');
-      pipe(genPipeDestination(response, url));
+      if (isCrawler) {
+        response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
+        response.setHeader('content-type', 'text/html');
+        pipe(destination);      
+      }
+    },
+    onShellReady() {
+      if (!isCrawler) {
+        response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
+        response.setHeader('content-type', 'text/html');
+        pipe(destination);
+      }
     },
     onShellError() {
       response.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;

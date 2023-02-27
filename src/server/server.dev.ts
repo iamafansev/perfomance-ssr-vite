@@ -27,6 +27,7 @@ export const createServer = async () => {
         url,
         entrySrc,
         response,
+        isCrawler: false,
         genPipeDestination: genPipeDestinationWithTransformHtml(vite.transformIndexHtml),
         onError: vite!.ssrFixStacktrace
       });
