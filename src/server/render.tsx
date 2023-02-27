@@ -1,4 +1,3 @@
-import {ComponentProps} from 'react';
 import {Writable} from 'node:stream';
 import {Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
@@ -6,58 +5,62 @@ import {renderToPipeableStream} from 'react-dom/server';
 import {StaticRouter} from 'react-router-dom/server';
 
 import {App} from 'client/App';
-import {Document} from 'client/Document';
-
-type DocumentProps = ComponentProps<typeof Document>;
 
 type RenderInput = {
   url: string;
-  styleAssets?: DocumentProps['styleAssets'];
+  styleAssets?: string[];
   entrySrc: string;
   response: Response;
-  isCrawler: boolean;
-  genPipeDestination?: (response: Response, url: string) => Writable;
+  beginTemplate: string;
+  endTemplate: string;
   onError?: (error: Error) => void;
 };
 
-const defaultGenPipeDestination = (response: Response) => response;
-
 export const render = ({
   url,
-  styleAssets,
+  styleAssets = [],
+  beginTemplate,
   entrySrc,
   response,
-  isCrawler,
   onError = console.error,
-  genPipeDestination = defaultGenPipeDestination
 }: RenderInput) => {
   const wrappedApp = (
-    <Document styleAssets={styleAssets}>
-        <StaticRouter location={url}>
-          <App />
-        </StaticRouter>
-    </Document>
+    <StaticRouter location={url}>
+      <App />
+    </StaticRouter>
   );
 
   let didError = false;
+  let transformedBeginTemplate = false;
 
-  const destination = genPipeDestination(response, url);
+  const stream =  new Writable({
+    write(chunk: Buffer, _encoding, callback) {
+      const currentChunk = transformedBeginTemplate
+        ? chunk.toString()
+        : beginTemplate
+            .replace(
+              '<!-- STYLES -->',
+              styleAssets.map((src) => `<link rel="stylesheet" href=${src} />`).join('')
+            )
+            .concat(chunk.toString());
+
+      if (!transformedBeginTemplate) {
+        transformedBeginTemplate = true;
+      }
+
+      response.write(currentChunk, callback);
+    },
+    final() {
+      response.end();
+    },
+  });
 
   const {pipe} = renderToPipeableStream(wrappedApp, {
     bootstrapModules: [entrySrc],
     onAllReady() {
-      if (isCrawler) {
-        response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
-        response.setHeader('content-type', 'text/html');
-        pipe(destination);      
-      }
-    },
-    onShellReady() {
-      if (!isCrawler) {
-        response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
-        response.setHeader('content-type', 'text/html');
-        pipe(destination);
-      }
+      response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
+      response.setHeader('content-type', 'text/html');
+      pipe(stream);
     },
     onShellError() {
       response.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
@@ -65,7 +68,7 @@ export const render = ({
     },
     onError(error) {
       didError = true;
-      onError(error as Error)
+      onError(error as Error);
     }
   });
 };

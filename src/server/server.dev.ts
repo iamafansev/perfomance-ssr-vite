@@ -1,10 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from "node:url";
 import express from "express";
 import {StatusCodes} from 'http-status-codes';
-import { createServer as createViteServer } from "vite";
-import { performance } from "perf_hooks";
+import {createServer as createViteServer} from "vite";
+import {performance} from "perf_hooks";
 
-import { printServerInfo } from "server/utils/printServerInfo";
-import { genPipeDestinationWithTransformHtml } from "server/utils/genPipeDestinationWithTransformHtml";
+import {printServerInfo} from "server/utils/printServerInfo";
 
 if (!globalThis.ssrStartTime) {
   globalThis.ssrStartTime = performance.now();
@@ -12,9 +14,14 @@ if (!globalThis.ssrStartTime) {
 
 type Render = typeof import('./render');
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const resolveFromRoot = (p: string) => path.resolve(dirname, "..", "..", p);
+
 export const createServer = async () => {
   const app = express();
   const vite = await createViteServer();
+  const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
+  const [beginTemplate, endTemplate] = template.split('<!-- CONTENT -->');
 
   app.use(vite.middlewares);
   app.use("*", async (request, response) => {
@@ -23,12 +30,14 @@ export const createServer = async () => {
       const { render } = await vite!.ssrLoadModule("src/server/render.tsx") as Render;
       const entrySrc = vite.config.build.rollupOptions.input as string;
 
+      const transformedBeginTemplate = await vite.transformIndexHtml(url, beginTemplate);
+
       render({
         url,
         entrySrc,
         response,
-        isCrawler: false,
-        genPipeDestination: genPipeDestinationWithTransformHtml(vite.transformIndexHtml),
+        beginTemplate: transformedBeginTemplate,
+        endTemplate,
         onError: vite!.ssrFixStacktrace
       });
     } catch (e) {

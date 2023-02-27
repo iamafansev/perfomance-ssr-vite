@@ -1,10 +1,10 @@
+import fs from 'node:fs';
 import path from "node:path";
 import { createRequire } from 'node:module';
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { resolveConfig } from "vite";
 import {StatusCodes} from 'http-status-codes';
-import isbot from 'isbot';
 
 const require = createRequire(import.meta.url);
 
@@ -18,7 +18,6 @@ type ManifestAsset = {
 const PORT = process.env.PORT || 3000;
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const resolveFromRoot = (p: string) => path.resolve(dirname, "..", "..", p);
 
 const CSS_EXT = '.css';
@@ -36,15 +35,25 @@ export const createServer = async () => {
   const config = await resolveConfig({}, 'build');
   const entrySrc = (manifest[config.build.rollupOptions.input as string] as ManifestAsset).file;
 
+  const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
+  const [beginTemplate, endTemplate] = template.split('<!-- CONTENT -->');
+
   const app = express();
 
-  app.use((await import("compression")).default());
+  // app.use((await import("compression")).default());
   app.use((await import("serve-static")).default(resolveFromRoot("dist/client")));
 
   app.use("*", async (request, response) => {
     try {
       const url = request.originalUrl;
-      render({url, styleAssets, entrySrc, response, isCrawler: isbot(request.get('user-agent'))});
+      render({
+        url,
+        styleAssets,
+        entrySrc,
+        response,
+        beginTemplate,
+        endTemplate,
+      });
     } catch (e) {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR).end((e as Error).stack);
     }
