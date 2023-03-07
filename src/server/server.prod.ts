@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { resolveConfig } from "vite";
 import {StatusCodes} from 'http-status-codes';
+import {minify} from 'html-minifier';
 
 const require = createRequire(import.meta.url);
 
@@ -36,7 +37,8 @@ export const createServer = async () => {
   const entrySrc = (manifest[config.build.rollupOptions.input as string] as ManifestAsset).file;
 
   const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
-  const [beginTemplate, endTemplate] = template.split('<!-- CONTENT -->');
+  const minifiedTemplate = minify(template, {collapseWhitespace: true});
+  const [beginTemplate, endTemplate] = minifiedTemplate.split('<!-- CONTENT -->');
 
   const app = express();
 

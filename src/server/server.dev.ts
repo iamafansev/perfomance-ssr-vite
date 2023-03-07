@@ -5,6 +5,7 @@ import express from "express";
 import {StatusCodes} from 'http-status-codes';
 import {createServer as createViteServer} from "vite";
 import {performance} from "perf_hooks";
+import {minify} from 'html-minifier';
 
 import {printServerInfo} from "server/utils/printServerInfo";
 
@@ -21,7 +22,8 @@ export const createServer = async () => {
   const app = express();
   const vite = await createViteServer();
   const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
-  const [beginTemplate, endTemplate] = template.split('<!-- CONTENT -->');
+  const minifiedTemplate = minify(template, {collapseWhitespace: true});
+  const [beginTemplate, endTemplate] = minifiedTemplate.split('<!-- CONTENT -->');
 
   app.use(vite.middlewares);
   app.use("*", async (request, response) => {
