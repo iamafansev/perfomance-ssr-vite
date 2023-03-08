@@ -10,8 +10,6 @@ import {collectTemplate} from 'server/collectTemplate';
 
 type RenderInput = {
   url: string;
-  styleAssets?: string[];
-  entrySrc: string;
   response: Response;
   template: string;
   onError?: (error: Error) => void;
@@ -19,9 +17,7 @@ type RenderInput = {
 
 export const render = ({
   url,
-  styleAssets = [],
   template,
-  entrySrc,
   response,
   onError = console.error,
 }: RenderInput) => {
@@ -39,34 +35,29 @@ export const render = ({
   let didError = false;
 
   const stream =  new Writable({
-    write(chunk: Buffer, _encoding, cb) {
+    write(chunk: Buffer, _encoding) {
       contentHtml += chunk.toString();
-      response.write('', cb);
     },
   });
 
   const {pipe} = renderToPipeableStream(wrappedApp, {
     onAllReady() {
       if (didError) {
-        response.write('<h1>Something went wrong</h1>')
-        return response.end();
+        return response.end('<h1>Something went wrong</h1>');
       }
-
-      response
-        .status(StatusCodes.OK)
-        .setHeader('content-type', 'text/html')
-        .setHeader('Cache-Control', 'no-cache');
 
       pipe(stream);
 
       const html = collectTemplate(template, {
         helmetState: helmetContext.helmet,
-        styleAssets,
-        scriptAssets: [entrySrc],
         content: contentHtml,
       });
 
-      response.end(html);
+      response
+        .status(StatusCodes.OK)
+        .setHeader('content-type', 'text/html')
+        .setHeader('Cache-Control', 'no-cache')
+        .end(html);
     },
     onShellError() {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR);

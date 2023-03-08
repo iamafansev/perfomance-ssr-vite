@@ -31,13 +31,11 @@ export const createServer = async () => {
     try {
       const url = request.originalUrl;
       const { render } = await vite!.ssrLoadModule("src/server/render.tsx") as Render;
-      const entrySrc = vite.config.build.rollupOptions.input as string;
 
       const transformedTemplate = await vite.transformIndexHtml(url, minifiedTemplate);
 
       render({
         url,
-        entrySrc,
         response,
         template: transformedTemplate,
         onError: vite!.ssrFixStacktrace
