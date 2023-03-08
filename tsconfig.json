@@ -25,6 +25,6 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "rootDirs": ["src"],
-    "baseUrl": "src",
-  },
+    "baseUrl": "src"
+  }
 }

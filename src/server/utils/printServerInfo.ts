@@ -1,6 +1,6 @@
-import { ViteDevServer } from "vite";
-import chalk from "chalk";
-import { performance } from "perf_hooks";
+import { ViteDevServer } from 'vite';
+import chalk from 'chalk';
+import { performance } from 'perf_hooks';
 
 export const printServerInfo = ({
   viteServer,
@@ -11,7 +11,7 @@ export const printServerInfo = ({
 }) => {
   const { info } = viteServer.config.logger;
 
-  let ssrReadyMessage = "\n -- SSR mode";
+  let ssrReadyMessage = '\n -- SSR mode';
 
   info(chalk.green(`dev server running at:\n`), {
     clear: !viteServer.config.logger.hasWarned,
@@ -25,5 +25,5 @@ export const printServerInfo = ({
     );
   }
 
-  info(ssrReadyMessage.concat("\n"));
+  info(ssrReadyMessage.concat('\n'));
 };

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { AppBar } from "client/AppBar";
+import { AppBar } from 'client/AppBar';
 
-import reactLogo from "./react.svg";
+import reactLogo from './react.svg';
 
-import "./Home.css";
+import './Home.css';
 
 export const Home = () => {
   const [count, setCount] = useState(0);
@@ -13,7 +13,7 @@ export const Home = () => {
   return (
     <>
       <Helmet>
-          <title>Home</title>
+        <title>Home</title>
       </Helmet>
       <div className="App">
         <AppBar />
