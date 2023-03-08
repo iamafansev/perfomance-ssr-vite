@@ -1,4 +1,5 @@
 import {FC, useState} from 'react';
+import { Helmet } from 'react-helmet-async';
 
 import { AppBar } from "client/AppBar";
 
@@ -9,6 +10,9 @@ export const About: FC = () => {
 
     return (
         <div>
+            <Helmet>
+                <title>About</title>
+            </Helmet>
             <AppBar />
             <div className="content">
                 <h1>About page</h1>

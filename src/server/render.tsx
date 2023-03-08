@@ -3,6 +3,7 @@ import {Response} from 'express';
 import {StatusCodes} from 'http-status-codes';
 import {renderToPipeableStream} from 'react-dom/server';
 import {StaticRouter} from 'react-router-dom/server';
+import {HelmetProvider, HelmetServerState} from 'react-helmet-async';
 
 import {App} from 'client/App';
 
@@ -25,10 +26,14 @@ export const render = ({
   response,
   onError = console.error,
 }: RenderInput) => {
+  const helmetContext: {helmet: HelmetServerState} = {helmet: {} as HelmetServerState};
+
   const wrappedApp = (
-    <StaticRouter location={url}>
-      <App />
-    </StaticRouter>
+    <HelmetProvider context={helmetContext}>
+      <StaticRouter location={url}>
+        <App />
+      </StaticRouter>
+    </HelmetProvider>
   );
 
   let contentHtml = '';
@@ -43,8 +48,13 @@ export const render = ({
 
   const {pipe} = renderToPipeableStream(wrappedApp, {
     onAllReady() {
+      if (didError) {
+        response.write('<h1>Something went wrong</h1>')
+        return response.end();
+      }
+
       response
-        .status(didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK)
+        .status(StatusCodes.OK)
         .setHeader('content-type', 'text/html')
         .setHeader('Cache-Control', 'no-cache');
 
@@ -54,6 +64,14 @@ export const render = ({
         .replace(
           '<!-- STYLES -->',
           styleAssets.map((src) => `<link rel="stylesheet" href=${src} />`).join('')
+        )
+        .replace(
+          '<!-- META -->',
+          [
+            helmetContext.helmet.meta.toString(),
+            helmetContext.helmet.title.toString(),
+            helmetContext.helmet.link.toString()
+          ].join('')
         );
 
       const transformedEndHtml = endTemplate
@@ -67,7 +85,6 @@ export const render = ({
     },
     onShellError() {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR);
-      response.end('<h1>Something went wrong</h1>');
     },
     onError(error) {
       didError = true;
