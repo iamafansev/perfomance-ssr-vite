@@ -26,6 +26,8 @@ export const createServer = async () => {
   const [beginTemplate, endTemplate] = minifiedTemplate.split('<!-- CONTENT -->');
 
   app.use(vite.middlewares);
+  app.use((await import("compression")).default({level: 0}));
+
   app.use("*", async (request, response) => {
     try {
       const url = request.originalUrl;

@@ -6,6 +6,7 @@ import express from "express";
 import { resolveConfig } from "vite";
 import {StatusCodes} from 'http-status-codes';
 import {minify} from 'html-minifier';
+// import compression from 'compression';
 
 const require = createRequire(import.meta.url);
 
@@ -42,7 +43,7 @@ export const createServer = async () => {
 
   const app = express();
 
-  // app.use((await import("compression")).default());
+  app.use((await import("compression")).default());
   app.use((await import("serve-static")).default(resolveFromRoot("dist/client")));
 
   app.use("*", async (request, response) => {

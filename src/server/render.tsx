@@ -50,20 +50,22 @@ export const render = ({
 
       response.write(currentChunk, callback);
     },
-    final() {
-      response.end();
-    },
   });
 
   const {pipe} = renderToPipeableStream(wrappedApp, {
     bootstrapModules: [entrySrc],
     onAllReady() {
-      response.statusCode = didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
-      response.setHeader('content-type', 'text/html');
+      response
+        .status(didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK)
+        .setHeader('content-type', 'text/html')
+        .setHeader('Cache-Control', 'no-cache')
       pipe(stream);
+      response.flush();
+      response.end();
     },
     onShellError() {
-      response.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+      response.status(StatusCodes.INTERNAL_SERVER_ERROR);
+      response.flush();
       response.end('<h1>Something went wrong</h1>');
     },
     onError(error) {
