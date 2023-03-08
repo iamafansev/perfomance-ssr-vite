@@ -23,7 +23,6 @@ export const createServer = async () => {
   const vite = await createViteServer();
   const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
   const minifiedTemplate = minify(template, {collapseWhitespace: true});
-  const [beginTemplate, endTemplate] = minifiedTemplate.split('<!-- CONTENT -->');
 
   app.use(vite.middlewares);
   app.use((await import("compression")).default({level: 0}));
@@ -34,14 +33,13 @@ export const createServer = async () => {
       const { render } = await vite!.ssrLoadModule("src/server/render.tsx") as Render;
       const entrySrc = vite.config.build.rollupOptions.input as string;
 
-      const transformedBeginTemplate = await vite.transformIndexHtml(url, beginTemplate);
+      const transformedTemplate = await vite.transformIndexHtml(url, minifiedTemplate);
 
       render({
         url,
         entrySrc,
         response,
-        beginTemplate: transformedBeginTemplate,
-        endTemplate,
+        template: transformedTemplate,
         onError: vite!.ssrFixStacktrace
       });
     } catch (e) {

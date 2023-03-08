@@ -6,7 +6,6 @@ import express from "express";
 import { resolveConfig } from "vite";
 import {StatusCodes} from 'http-status-codes';
 import {minify} from 'html-minifier';
-// import compression from 'compression';
 
 const require = createRequire(import.meta.url);
 
@@ -39,7 +38,6 @@ export const createServer = async () => {
 
   const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
   const minifiedTemplate = minify(template, {collapseWhitespace: true});
-  const [beginTemplate, endTemplate] = minifiedTemplate.split('<!-- CONTENT -->');
 
   const app = express();
 
@@ -54,8 +52,7 @@ export const createServer = async () => {
         styleAssets,
         entrySrc,
         response,
-        beginTemplate,
-        endTemplate,
+        template: minifiedTemplate,
       });
     } catch (e) {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR).end((e as Error).stack);

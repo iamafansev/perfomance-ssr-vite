@@ -6,23 +6,22 @@ import {StaticRouter} from 'react-router-dom/server';
 import {HelmetProvider, HelmetServerState} from 'react-helmet-async';
 
 import {App} from 'client/App';
+import {collectTemplate} from 'server/collectTemplate';
 
 type RenderInput = {
   url: string;
   styleAssets?: string[];
   entrySrc: string;
   response: Response;
-  beginTemplate: string;
-  endTemplate: string;
+  template: string;
   onError?: (error: Error) => void;
 };
 
 export const render = ({
   url,
   styleAssets = [],
-  beginTemplate,
+  template,
   entrySrc,
-  endTemplate,
   response,
   onError = console.error,
 }: RenderInput) => {
@@ -60,28 +59,14 @@ export const render = ({
 
       pipe(stream);
 
-      const transformedBedinHtml = beginTemplate
-        .replace(
-          '<!-- STYLES -->',
-          styleAssets.map((src) => `<link rel="stylesheet" href=${src} />`).join('')
-        )
-        .replace(
-          '<!-- META -->',
-          [
-            helmetContext.helmet.meta.toString(),
-            helmetContext.helmet.title.toString(),
-            helmetContext.helmet.link.toString()
-          ].join('')
-        );
+      const html = collectTemplate(template, {
+        helmetState: helmetContext.helmet,
+        styleAssets,
+        scriptAssets: [entrySrc],
+        content: contentHtml,
+      });
 
-      const transformedEndHtml = endTemplate
-        .replace(
-          '<!-- SCRIPTS -->',
-          `<script type="module" src="${entrySrc}" async=""></script>`
-        );
-
-      const resultHtml = transformedBedinHtml.concat(contentHtml, transformedEndHtml);
-      response.end(resultHtml);
+      response.end(html);
     },
     onShellError() {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR);
