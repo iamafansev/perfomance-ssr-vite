@@ -21,6 +21,7 @@ export const render = ({
   styleAssets = [],
   beginTemplate,
   entrySrc,
+  endTemplate,
   response,
   onError = console.error,
 }: RenderInput) => {
@@ -30,42 +31,42 @@ export const render = ({
     </StaticRouter>
   );
 
+  let contentHtml = '';
   let didError = false;
-  let transformedBeginTemplate = false;
 
   const stream =  new Writable({
-    write(chunk: Buffer, _encoding, callback) {
-      const currentChunk = transformedBeginTemplate
-        ? chunk.toString()
-        : beginTemplate
-            .replace(
-              '<!-- STYLES -->',
-              styleAssets.map((src) => `<link rel="stylesheet" href=${src} />`).join('')
-            )
-            .concat(chunk.toString());
-
-      if (!transformedBeginTemplate) {
-        transformedBeginTemplate = true;
-      }
-
-      response.write(currentChunk, callback);
+    write(chunk: Buffer, _encoding, cb) {
+      contentHtml += chunk.toString();
+      response.write('', cb);
     },
   });
 
   const {pipe} = renderToPipeableStream(wrappedApp, {
-    bootstrapModules: [entrySrc],
     onAllReady() {
       response
         .status(didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK)
         .setHeader('content-type', 'text/html')
-        .setHeader('Cache-Control', 'no-cache')
+        .setHeader('Cache-Control', 'no-cache');
+
       pipe(stream);
-      response.flush();
-      response.end();
+
+      const transformedBedinHtml = beginTemplate
+        .replace(
+          '<!-- STYLES -->',
+          styleAssets.map((src) => `<link rel="stylesheet" href=${src} />`).join('')
+        );
+
+      const transformedEndHtml = endTemplate
+        .replace(
+          '<!-- SCRIPTS -->',
+          `<script type="module" src="${entrySrc}" async=""></script>`
+        );
+
+      const resultHtml = transformedBedinHtml.concat(contentHtml, transformedEndHtml);
+      response.end(resultHtml);
     },
     onShellError() {
       response.status(StatusCodes.INTERNAL_SERVER_ERROR);
-      response.flush();
       response.end('<h1>Something went wrong</h1>');
     },
     onError(error) {
