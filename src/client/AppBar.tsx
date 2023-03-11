@@ -7,7 +7,7 @@ export const AppBar = () => {
         display: 'flex',
         gap: 12,
         justifyContent: 'center',
-        paddingBottom: 12,
+        padding: 20,
       }}
     >
       <Link to="/">Home</Link>

@@ -1,0 +1,11 @@
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-self: center;
+  padding: 10%;
+}
+
+.footer {
+  margin-top: auto;
+}
