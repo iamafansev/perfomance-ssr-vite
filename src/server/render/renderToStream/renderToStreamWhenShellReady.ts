@@ -5,7 +5,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import {
   collectBeginTemplate,
   collectEndTemplate,
-} from 'server/utils/template';
+} from 'server/render/templateUtils';
 
 import { RenderToStream } from './types';
 
@@ -15,7 +15,7 @@ export const renderToStreamWhenShellReady = ({
   response,
   helmetServerState,
   template,
-  onError = console.error,
+  onError,
 }: RenderToStream) => {
   let writedBeginHtml = false;
   let didError = false;

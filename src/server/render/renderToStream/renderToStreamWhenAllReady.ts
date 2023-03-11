@@ -2,7 +2,7 @@ import { Writable } from 'node:stream';
 import { StatusCodes } from 'http-status-codes';
 import { renderToPipeableStream } from 'react-dom/server';
 
-import { collectTemplate } from 'server/utils/template';
+import { collectTemplate } from 'server/render/templateUtils';
 
 import { RenderToStream } from './types';
 
@@ -12,7 +12,7 @@ export const renderToStreamWhenAllReady = ({
   helmetServerState,
   template,
   ssrExchange,
-  onError = console.error,
+  onError,
 }: RenderToStream) => {
   let contentHtml = '';
   let didError = false;

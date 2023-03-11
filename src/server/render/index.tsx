@@ -14,17 +14,29 @@ import {
 } from 'urql';
 
 import { App } from 'client/App';
+import {
+  renderToStreamWhenShellReady,
+  renderToStreamWhenAllReady,
+  RenderToStream,
+} from 'server/render/renderToStream';
 
 type Render = {
   url: string;
   withPrepass: boolean;
-};
+  onError?: (error: Error) => void;
+} & Pick<RenderToStream, 'template' | 'response'>;
 
 const delayExchange: Exchange = ({ forward }) => {
   return (ops$) => pipe(ops$, forward);
 };
 
-export const render = async ({ url, withPrepass }: Render) => {
+export const render = async ({
+  url,
+  withPrepass,
+  template,
+  response,
+  onError = console.error,
+}: Render) => {
   const helmetContext: { helmet: HelmetServerState } = {
     helmet: {} as HelmetServerState,
   };
@@ -49,9 +61,19 @@ export const render = async ({ url, withPrepass }: Render) => {
     </Provider>
   );
 
+  const renderToStreamParams = {
+    ssrExchange: ssr,
+    template,
+    response,
+    jsx,
+    onError,
+    helmetServerState: helmetContext,
+  };
+
   if (withPrepass) {
     await prepass(jsx);
+    renderToStreamWhenAllReady(renderToStreamParams);
+  } else {
+    renderToStreamWhenShellReady(renderToStreamParams);
   }
-
-  return { jsx, ssr, helmetContext };
 };

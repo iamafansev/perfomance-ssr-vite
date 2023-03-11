@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { ReactNode } from 'react';
 import { ssrExchange } from 'urql';
 
-import { CollectTemplateOptions } from 'server/utils/template';
+import { CollectTemplateOptions } from 'server/render/templateUtils';
 
 export type RenderToStream = {
   jsx: ReactNode;
@@ -13,5 +13,5 @@ export type RenderToStream = {
     beginTemplate: string;
     endTemplate: string;
   };
-  onError?: (error: Error) => void;
+  onError: (error: Error) => void;
 } & CollectTemplateOptions;
