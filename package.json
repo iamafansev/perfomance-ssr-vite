@@ -9,7 +9,9 @@
     "build": "pnpm build:client && pnpm build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --outDir dist/server --ssr src/server/server.prod.ts",
-    "lint": "eslint './**/*.{js,ts,tsx}'"
+    "lint": "eslint './**/*.{js,ts,tsx}'",
+    "prettify": "prettier './**/*.{js,ts,tsx,css}' --write",
+    "gen:gql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "chalk": "^5.2.0",
@@ -31,6 +33,12 @@
     "wonka": "^6.2.4"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/client-preset": "^2.1.1",
+    "@graphql-codegen/near-operation-file-preset": "^2.5.0",
+    "@graphql-codegen/typed-document-node": "^3.0.2",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-operations": "^3.0.2",
     "@types/compression": "^1.7.2",
     "@types/express": "^4.17.14",
     "@types/html-minifier": "^4.0.2",

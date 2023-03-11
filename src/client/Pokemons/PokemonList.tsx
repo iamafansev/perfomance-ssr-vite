@@ -1,28 +1,17 @@
-import { gql, useQuery } from 'urql';
+import { isNotNullable } from 'client/utils';
 
-const POKEMONS_QUERY = gql`
-  query Pokemons {
-    pokemons(limit: 10) {
-      id
-      name
-    }
-  }
-`;
+import { usePokemons } from './usePokemons';
 
 export const PokemonList = () => {
-  const [result] = useQuery({ query: POKEMONS_QUERY });
-
-  const { data, fetching, error } = result;
+  const [{ data, fetching, error }] = usePokemons();
 
   return (
     <div>
       {fetching && <p>Loading...</p>}
-
       {error && <p>Oh no... {error.message}</p>}
-
       {data && (
         <ul>
-          {data.pokemons.map((pokemon) => (
+          {data.pokemons?.filter(isNotNullable).map((pokemon) => (
             <li key={pokemon.id}>{pokemon.name}</li>
           ))}
         </ul>
