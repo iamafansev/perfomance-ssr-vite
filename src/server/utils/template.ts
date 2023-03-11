@@ -15,6 +15,9 @@ const CONTENT_SEARCH_VALUE = '<!-- CONTENT -->';
 const buildScriptTag = (src: string) =>
   `<script type="module" src="${src}"></script>`;
 
+export const splitTemplate = (template: string) =>
+  template.split(CONTENT_SEARCH_VALUE);
+
 export const collectBeginTemplate = (
   beginTemplate: string,
   options: Pick<CollectTemplateOptions, 'css' | 'helmetServerState'>

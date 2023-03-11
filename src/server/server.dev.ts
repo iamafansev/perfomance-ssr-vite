@@ -8,6 +8,7 @@ import { performance } from 'perf_hooks';
 import { minify } from 'html-minifier';
 
 import { printServerInfo } from 'server/utils/printServerInfo';
+import { splitTemplate } from 'server/utils/template';
 
 if (!globalThis.ssrStartTime) {
   globalThis.ssrStartTime = performance.now();
@@ -39,10 +40,16 @@ export const createServer = async () => {
         minifiedTemplate
       );
 
+      const [beginTemplate, endTemplate] = splitTemplate(transformedTemplate);
+
       render({
         url,
         response,
-        template: transformedTemplate,
+        template: {
+          full: transformedTemplate,
+          beginTemplate,
+          endTemplate,
+        },
         onError: vite!.ssrFixStacktrace,
       });
     } catch (e) {

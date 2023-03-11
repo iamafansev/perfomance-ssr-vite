@@ -2,7 +2,7 @@ import { Writable } from 'node:stream';
 import { StatusCodes } from 'http-status-codes';
 import { renderToPipeableStream } from 'react-dom/server';
 
-import { collectTemplate } from 'server/utils/renderToStream/collectTemplate';
+import { collectTemplate } from 'server/utils/template';
 
 import { RenderToStremWhenAllReady } from './types';
 
@@ -30,7 +30,7 @@ export const renderToStreamWhenAllReady = ({
 
       pipe(stream);
 
-      const html = collectTemplate(template, {
+      const html = collectTemplate(template.full, {
         helmetServerState,
         content: contentHtml,
       });

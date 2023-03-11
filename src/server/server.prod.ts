@@ -6,6 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import { minify } from 'html-minifier';
 
 import { render } from 'server/render';
+import { splitTemplate } from 'server/utils/template';
 
 const PORT = process.env.PORT || 3000;
 
@@ -18,6 +19,7 @@ export const createServer = async () => {
     'utf-8'
   );
   const minifiedTemplate = minify(template, { collapseWhitespace: true });
+  const [beginTemplate, endTemplate] = splitTemplate(minifiedTemplate);
 
   const app = express();
 
@@ -31,7 +33,15 @@ export const createServer = async () => {
   app.use('*', async (request, response) => {
     try {
       const url = request.originalUrl;
-      render({ url, response, template: minifiedTemplate });
+      render({
+        url,
+        response,
+        template: {
+          full: minifiedTemplate,
+          beginTemplate,
+          endTemplate,
+        },
+      });
     } catch (e) {
       response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)

@@ -5,7 +5,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import {
   collectBeginTemplate,
   collectEndTemplate,
-} from 'server/utils/renderToStream/collectTemplate';
+} from 'server/utils/template';
 
 import { RenderToStremWhenAllReady } from './types';
 
@@ -19,14 +19,13 @@ export const renderToStreamWhenShellReady = ({
   let writedBeginHtml = false;
   let didError = false;
 
-  const [beginTemplate, endTemplate] = template.split('<!-- CONTENT -->');
-
   const stream = new Writable({
     write(chunk: Buffer, _encoding, callback) {
       if (!writedBeginHtml) {
-        const collectedBeginTemplate = collectBeginTemplate(beginTemplate, {
-          helmetServerState,
-        });
+        const collectedBeginTemplate = collectBeginTemplate(
+          template.beginTemplate,
+          { helmetServerState }
+        );
 
         const concatedChunks = collectedBeginTemplate.concat(chunk.toString());
         response.write(concatedChunks, callback);
@@ -36,7 +35,7 @@ export const renderToStreamWhenShellReady = ({
       }
     },
     final() {
-      response.end(collectEndTemplate(endTemplate, {}));
+      response.end(collectEndTemplate(template.endTemplate, {}));
     },
   });
 

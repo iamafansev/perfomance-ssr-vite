@@ -3,12 +3,16 @@ import { StaticRouter } from 'react-router-dom/server';
 import { HelmetProvider, HelmetServerState } from 'react-helmet-async';
 
 import { App } from 'client/App';
-import { renderToStreamWhenAllReady } from 'server/utils/renderToStream';
+import { renderToStreamWhenShellReady } from 'server/utils/renderToStream';
 
 type RenderInput = {
   url: string;
   response: Response;
-  template: string;
+  template: {
+    full: string;
+    beginTemplate: string;
+    endTemplate: string;
+  };
   onError?: (error: Error) => void;
 };
 
@@ -30,7 +34,7 @@ export const render = ({
     </HelmetProvider>
   );
 
-  renderToStreamWhenAllReady({
+  renderToStreamWhenShellReady({
     template,
     response,
     app: wrappedApp,
