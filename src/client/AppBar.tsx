@@ -11,6 +11,7 @@ export const AppBar = () => {
       }}
     >
       <Link to="/">Home</Link>
+      <Link to="/pokemons">Pokemons</Link>
       <Link to="/about">About</Link>
     </nav>
   );

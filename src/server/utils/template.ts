@@ -1,3 +1,4 @@
+import { ssrExchange } from 'urql';
 import { HelmetServerState } from 'react-helmet-async';
 
 export type CollectTemplateOptions = {
@@ -5,11 +6,13 @@ export type CollectTemplateOptions = {
   css?: string;
   scriptAssets?: string[];
   content?: string;
+  ssrExchange: ReturnType<typeof ssrExchange>;
 };
 
 const META_SEARCH_VALUE = '<!-- META -->';
 const CSS_SEARCH_VALUE = '<!-- CSS -->';
 const SCRIPTS_SEARCH_VALUE = '<!-- SCRIPTS -->';
+const URQL_DATA_SEARCH_VALUE = '<!-- URQL_DATA -->';
 const CONTENT_SEARCH_VALUE = '<!-- CONTENT -->';
 
 const buildScriptTag = (src: string) =>
@@ -44,12 +47,18 @@ const collectContentTemplate = (
 
 export const collectEndTemplate = (
   endTemplate: string,
-  options: Pick<CollectTemplateOptions, 'scriptAssets'>
+  options: Pick<CollectTemplateOptions, 'scriptAssets' | 'ssrExchange'>
 ) => {
-  const { scriptAssets = [] } = options;
+  const { scriptAssets = [], ssrExchange: ssr } = options;
   const scripts = scriptAssets.map(buildScriptTag).join('');
 
-  return endTemplate.replace(SCRIPTS_SEARCH_VALUE, scripts);
+  const urqlDataScript = `<script>window.urqlData=${JSON.stringify(
+    ssr.extractData()
+  )}</script>`;
+
+  return endTemplate
+    .replace(SCRIPTS_SEARCH_VALUE, scripts)
+    .replace(URQL_DATA_SEARCH_VALUE, urqlDataScript);
 };
 
 export const collectTemplate = (

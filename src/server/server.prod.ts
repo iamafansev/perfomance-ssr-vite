@@ -4,6 +4,11 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { minify } from 'html-minifier';
+import isbot from 'isbot';
+import {
+  renderToStreamWhenShellReady,
+  renderToStreamWhenAllReady,
+} from 'server/utils/renderToStream';
 
 import { render } from 'server/render';
 import { splitTemplate } from 'server/utils/template';
@@ -33,14 +38,28 @@ export const createServer = async () => {
   app.use('*', async (request, response) => {
     try {
       const url = request.originalUrl;
-      render({
+
+      const withPrepass = isbot(request.get('user-agent'));
+
+      const { jsx, ssr, helmetContext } = await render({
         url,
-        response,
+        withPrepass,
+      });
+
+      const renderToStream = withPrepass
+        ? renderToStreamWhenAllReady
+        : renderToStreamWhenShellReady;
+
+      renderToStream({
+        ssrExchange: ssr,
         template: {
           full: minifiedTemplate,
           beginTemplate,
           endTemplate,
         },
+        response,
+        jsx,
+        helmetServerState: helmetContext,
       });
     } catch (e) {
       response

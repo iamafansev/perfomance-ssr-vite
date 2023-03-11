@@ -7,15 +7,16 @@ import {
   collectEndTemplate,
 } from 'server/utils/template';
 
-import { RenderToStremWhenAllReady } from './types';
+import { RenderToStream } from './types';
 
 export const renderToStreamWhenShellReady = ({
-  app,
+  jsx,
+  ssrExchange,
   response,
   helmetServerState,
   template,
-  onError,
-}: RenderToStremWhenAllReady) => {
+  onError = console.error,
+}: RenderToStream) => {
   let writedBeginHtml = false;
   let didError = false;
 
@@ -35,11 +36,11 @@ export const renderToStreamWhenShellReady = ({
       }
     },
     final() {
-      response.end(collectEndTemplate(template.endTemplate, {}));
+      response.end(collectEndTemplate(template.endTemplate, { ssrExchange }));
     },
   });
 
-  const { pipe } = renderToPipeableStream(app, {
+  const { pipe } = renderToPipeableStream(jsx, {
     onShellReady() {
       response.status(
         didError ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK

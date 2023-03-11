@@ -1,44 +1,57 @@
-import { Response } from 'express';
+import fetch from 'cross-fetch';
 import { StaticRouter } from 'react-router-dom/server';
 import { HelmetProvider, HelmetServerState } from 'react-helmet-async';
+import prepass from 'react-ssr-prepass';
+import { pipe } from 'wonka';
+import {
+  Provider,
+  createClient,
+  ssrExchange,
+  dedupExchange,
+  fetchExchange,
+  cacheExchange,
+  Exchange,
+} from 'urql';
 
 import { App } from 'client/App';
-import { renderToStreamWhenShellReady } from 'server/utils/renderToStream';
 
-type RenderInput = {
+type Render = {
   url: string;
-  response: Response;
-  template: {
-    full: string;
-    beginTemplate: string;
-    endTemplate: string;
-  };
-  onError?: (error: Error) => void;
+  withPrepass: boolean;
 };
 
-export const render = ({
-  url,
-  template,
-  response,
-  onError = console.error,
-}: RenderInput) => {
+const delayExchange: Exchange = ({ forward }) => {
+  return (ops$) => pipe(ops$, forward);
+};
+
+export const render = async ({ url, withPrepass }: Render) => {
   const helmetContext: { helmet: HelmetServerState } = {
     helmet: {} as HelmetServerState,
   };
 
-  const wrappedApp = (
-    <HelmetProvider context={helmetContext}>
-      <StaticRouter location={url}>
-        <App />
-      </StaticRouter>
-    </HelmetProvider>
+  const ssr = ssrExchange({ isClient: false });
+  const client = createClient({
+    url: 'https://trygql.formidable.dev/graphql/basic-pokedex',
+    suspense: true,
+    exchanges: withPrepass
+      ? [dedupExchange, cacheExchange, ssr, fetchExchange]
+      : [dedupExchange, ssr, delayExchange, fetchExchange],
+    fetch,
+  });
+
+  const jsx = (
+    <Provider value={client}>
+      <HelmetProvider context={helmetContext}>
+        <StaticRouter location={url}>
+          <App />
+        </StaticRouter>
+      </HelmetProvider>
+    </Provider>
   );
 
-  renderToStreamWhenShellReady({
-    template,
-    response,
-    app: wrappedApp,
-    onError,
-    helmetServerState: helmetContext,
-  });
+  if (withPrepass) {
+    await prepass(jsx);
+  }
+
+  return { jsx, ssr, helmetContext };
 };

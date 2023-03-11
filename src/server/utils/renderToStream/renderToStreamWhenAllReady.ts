@@ -4,15 +4,16 @@ import { renderToPipeableStream } from 'react-dom/server';
 
 import { collectTemplate } from 'server/utils/template';
 
-import { RenderToStremWhenAllReady } from './types';
+import { RenderToStream } from './types';
 
 export const renderToStreamWhenAllReady = ({
-  app,
+  jsx,
   response,
   helmetServerState,
   template,
-  onError,
-}: RenderToStremWhenAllReady) => {
+  ssrExchange,
+  onError = console.error,
+}: RenderToStream) => {
   let contentHtml = '';
   let didError = false;
 
@@ -22,7 +23,7 @@ export const renderToStreamWhenAllReady = ({
     },
   });
 
-  const { pipe } = renderToPipeableStream(app, {
+  const { pipe } = renderToPipeableStream(jsx, {
     onAllReady() {
       if (didError) {
         return response.end('<h1>Something went wrong</h1>');
@@ -31,6 +32,7 @@ export const renderToStreamWhenAllReady = ({
       pipe(stream);
 
       const html = collectTemplate(template.full, {
+        ssrExchange,
         helmetServerState,
         content: contentHtml,
       });

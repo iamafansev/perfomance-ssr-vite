@@ -7,8 +7,9 @@ import { createServer as createViteServer } from 'vite';
 import { performance } from 'perf_hooks';
 import { minify } from 'html-minifier';
 
-import { printServerInfo } from 'server/utils/printServerInfo';
 import { splitTemplate } from 'server/utils/template';
+import { printServerInfo } from 'server/utils/printServerInfo';
+import { renderToStreamWhenShellReady } from 'server/utils/renderToStream';
 
 if (!globalThis.ssrStartTime) {
   globalThis.ssrStartTime = performance.now();
@@ -42,15 +43,22 @@ export const createServer = async () => {
 
       const [beginTemplate, endTemplate] = splitTemplate(transformedTemplate);
 
-      render({
+      const { jsx, ssr, helmetContext } = await render({
         url,
-        response,
+        withPrepass: false,
+      });
+
+      renderToStreamWhenShellReady({
+        ssrExchange: ssr,
         template: {
           full: transformedTemplate,
           beginTemplate,
           endTemplate,
         },
+        response,
+        jsx,
         onError: vite!.ssrFixStacktrace,
+        helmetServerState: helmetContext,
       });
     } catch (e) {
       vite!.ssrFixStacktrace(e as Error);
