@@ -1,37 +1,42 @@
 import { HelmetServerState } from 'react-helmet-async';
 
-type CollectTemplateOptions = {
-  helmetState: HelmetServerState;
+export type CollectTemplateOptions = {
+  helmetServerState: { helmet: HelmetServerState };
   css?: string;
   scriptAssets?: string[];
-  content: string;
+  content?: string;
 };
+
+const META_SEARCH_VALUE = '<!-- META -->';
+const CSS_SEARCH_VALUE = '<!-- CSS -->';
+const SCRIPTS_SEARCH_VALUE = '<!-- SCRIPTS -->';
+const CONTENT_SEARCH_VALUE = '<!-- CONTENT -->';
 
 const buildScriptTag = (src: string) =>
   `<script type="module" src="${src}"></script>`;
 
 export const collectBeginTemplate = (
   beginTemplate: string,
-  options: Pick<CollectTemplateOptions, 'css' | 'helmetState'>
+  options: Pick<CollectTemplateOptions, 'css' | 'helmetServerState'>
 ) => {
-  const { helmetState, css = '' } = options;
+  const { helmetServerState, css = '' } = options;
 
   const meta = [
-    helmetState.meta.toString(),
-    helmetState.title.toString(),
-    helmetState.link.toString(),
+    helmetServerState.helmet.meta.toString(),
+    helmetServerState.helmet.title.toString(),
+    helmetServerState.helmet.link.toString(),
   ].join('');
 
   return beginTemplate
-    .replace('<!-- META -->', meta)
-    .replace('<!-- CSS -->', css);
+    .replace(META_SEARCH_VALUE, meta)
+    .replace(CSS_SEARCH_VALUE, css);
 };
 
 const collectContentTemplate = (
   contentTemplate: string,
-  options: Pick<CollectTemplateOptions, 'content'>
+  { content = '' }: Pick<CollectTemplateOptions, 'content'>
 ) => {
-  return contentTemplate.replace('<!-- CONTENT -->', options.content);
+  return contentTemplate.replace(CONTENT_SEARCH_VALUE, content);
 };
 
 export const collectEndTemplate = (
@@ -40,7 +45,8 @@ export const collectEndTemplate = (
 ) => {
   const { scriptAssets = [] } = options;
   const scripts = scriptAssets.map(buildScriptTag).join('');
-  return endTemplate.replace('<!-- SCRIPTS -->', scripts);
+
+  return endTemplate.replace(SCRIPTS_SEARCH_VALUE, scripts);
 };
 
 export const collectTemplate = (

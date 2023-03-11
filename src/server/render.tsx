@@ -35,6 +35,6 @@ export const render = ({
     response,
     app: wrappedApp,
     onError,
-    helmetContext,
+    helmetServerState: helmetContext,
   });
 };
