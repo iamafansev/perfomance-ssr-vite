@@ -22,7 +22,7 @@ const resolveFromRoot = (p: string) => path.resolve(dirname, '..', '..', p);
 export const createServer = async () => {
   const app = express();
   const vite = await createViteServer();
-  const template = fs.readFileSync(resolveFromRoot('index.html'), 'utf-8');
+  const template = fs.readFileSync(resolveFromRoot('src/index.html'), 'utf-8');
   const minifiedTemplate = minify(template, { collapseWhitespace: true });
 
   app.use(vite.middlewares);

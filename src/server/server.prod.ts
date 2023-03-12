@@ -16,7 +16,7 @@ const resolveFromRoot = (p: string) => path.resolve(dirname, '..', '..', p);
 
 export const createServer = async () => {
   const template = fs.readFileSync(
-    resolveFromRoot('dist/client/index.html'),
+    resolveFromRoot('dist/client/src/index.html'),
     'utf-8'
   );
   const minifiedTemplate = minify(template, { collapseWhitespace: true });

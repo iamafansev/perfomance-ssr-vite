@@ -9,7 +9,9 @@ export default defineConfig({
     assetsDir: './assets',
     manifest: true,
     rollupOptions: {
-      input: 'index.html',
+      input: {
+        main: 'src/index.html',
+      },
     },
   },
   server: {
