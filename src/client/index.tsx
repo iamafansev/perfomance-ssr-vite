@@ -10,7 +10,7 @@ import {
   fetchExchange,
 } from 'urql';
 
-import { App } from 'client/App';
+import { App } from 'client/app';
 
 const ssr = ssrExchange({
   isClient: true,

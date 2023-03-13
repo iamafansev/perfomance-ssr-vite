@@ -13,7 +13,7 @@ import {
   Exchange,
 } from 'urql';
 
-import { App } from 'client/App';
+import { App } from 'client/app';
 import {
   renderToStreamWhenShellReady,
   renderToStreamWhenAllReady,

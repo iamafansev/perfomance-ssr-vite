@@ -3,7 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import { MainLayout } from 'client/MainLayout';
 import { Home } from 'client/Home/Home';
 import { Pokemons } from 'client/Pokemons/Pokemons';
-import 'client/index.css';
+
+import './index.css';
 
 export const App = () => {
   return (
