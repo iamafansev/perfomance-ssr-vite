@@ -1,5 +1,5 @@
+@import 'normalize.css';
 @import './styles/vars.css';
-@import './styles/normalize.css';
 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
