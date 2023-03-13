@@ -14,14 +14,14 @@ const config: CodegenConfig = {
   overwrite: true,
   documents: 'src/client/**/*.graphql',
   generates: {
-    'src/client/types/graphql.tsx': {
+    'src/client/shared/types/graphql.tsx': {
       plugins: [eslintDisablePligin, 'typescript'],
     },
     src: {
       preset: 'near-operation-file',
       presetConfig: {
         extension: '.graphql-generated.ts',
-        baseTypesPath: 'client/types/graphql.tsx',
+        baseTypesPath: 'client/shared/types/graphql.tsx',
       },
       plugins: [
         eslintDisablePligin,
