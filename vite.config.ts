@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import { imagetools } from 'vite-imagetools';
 import webfontDownload from 'vite-plugin-webfont-dl';
 import react from '@vitejs/plugin-react-swc';
+import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
   appType: 'custom',
@@ -28,6 +29,7 @@ export default defineConfig({
   plugins: [
     webfontDownload([], { injectAsStyleTag: false, async: false }),
     imagetools(),
+    svgr(),
     react(),
   ],
   resolve: {

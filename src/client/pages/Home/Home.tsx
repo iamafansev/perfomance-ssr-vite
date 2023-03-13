@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 import { MainLayout } from 'client/shared/ui/templates/MainLayout';
 
-import reactLogo from './react.svg';
+import { ReactComponent as ReactLogo } from './react.svg';
 
 import classes from './Home.module.css';
 
@@ -21,7 +21,7 @@ export const Home = () => {
             <img src="/vite.svg" className={classes.logo} alt="Vite logo" />
           </a>
           <a href="https://reactjs.org" target="_blank" rel="noreferrer">
-            <img src={reactLogo} className={classes.logo} alt="React logo" />
+            <ReactLogo className={classes.logo} />
           </a>
         </div>
         <h1>Vite + React</h1>
