@@ -1,9 +1,9 @@
 import { isNotNullable } from 'client/utils';
 
-import { usePokemons } from './usePokemons';
+import { usePokemonsQuery } from './pokemons.graphql-generated';
 
 export const PokemonList = () => {
-  const [{ data, fetching, error }] = usePokemons();
+  const [{ data, fetching, error }] = usePokemonsQuery();
 
   return (
     <div>

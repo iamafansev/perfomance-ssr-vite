@@ -26,7 +26,7 @@ const config: CodegenConfig = {
       plugins: [
         eslintDisablePligin,
         'typescript-operations',
-        'typed-document-node',
+        'typescript-urql',
       ],
       hooks: {
         afterOneFileWrite: ['yarn prettify'],
