@@ -1,6 +1,6 @@
 import { ReactNode, FC } from 'react';
 
-import { AppBar } from 'client/shared/ui/organisms/AppBar/AppBar';
+import { AppBar } from 'client/shared/ui/AppBar/AppBar';
 
 import classes from './MainLayout.module.css';
 

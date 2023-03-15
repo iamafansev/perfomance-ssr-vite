@@ -59,6 +59,9 @@ module.exports = {
         unnamedComponents: 'arrow-function',
       },
     ],
+    'react/jsx-props-no-spreading': 0,
+    'react/button-has-type': 0,
+    'react/require-default-props': 0,
   },
   settings: {
     'import/resolver': {

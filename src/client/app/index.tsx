@@ -1,7 +1,13 @@
+import { ClassNameConfigurator } from '@mui/base/utils';
+
 import { Routing } from 'client/pages';
 
 import './index.css';
 
 export const App = () => {
-  return <Routing />;
+  return (
+    <ClassNameConfigurator disableDefaultClasses>
+      <Routing />
+    </ClassNameConfigurator>
+  );
 };
