@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { MainLayout } from 'client/shared/ui/templates/MainLayout';
-
 import { ReactComponent as ReactLogo } from './react.svg';
 
 import classes from './Home.module.css';
@@ -11,7 +9,7 @@ export const Home = () => {
   const [count, setCount] = useState(0);
 
   return (
-    <MainLayout>
+    <>
       <Helmet>
         <title>Home</title>
       </Helmet>
@@ -31,6 +29,6 @@ export const Home = () => {
           </button>
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 };

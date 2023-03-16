@@ -9,19 +9,18 @@ import clsx from 'clsx';
 
 import { ButtonBase } from '../ButtonBase/ButtonBase';
 
-import classes from './Button.module.css';
+import classes from './IconButton.module.css';
 
 type Props = {
   className?: string;
-  fullWidth?: boolean;
   loading?: boolean;
 };
 
-export const Button = forwardRef(function Button(
+export const IconButton = forwardRef(function IconButton(
   props: ButtonUnstyledProps & Props,
   forwardedRef: ForwardedRef<HTMLButtonElement>
 ) {
-  const { children, fullWidth, ...rest } = props;
+  const { children, ...rest } = props;
 
   const slotProps = useMemo<ButtonUnstyledOwnProps['slotProps']>(
     () => ({
@@ -41,7 +40,7 @@ export const Button = forwardRef(function Button(
   return (
     <ButtonBase
       {...rest}
-      className={clsx(classes.root, fullWidth && classes.fullWidth)}
+      className={classes.root}
       ref={forwardedRef}
       slotProps={slotProps}
     >

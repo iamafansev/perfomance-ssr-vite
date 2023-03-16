@@ -20,7 +20,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint', 'prettier'],
+  plugins: ['react', 'react-hooks', '@typescript-eslint', 'prettier'],
   rules: {
     'max-len': ['error', { code: 120 }],
     'import/prefer-default-export': 'off',
@@ -62,6 +62,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 0,
     'react/button-has-type': 0,
     'react/require-default-props': 0,
+    'react-hooks/exhaustive-deps': ['warn'],
   },
   settings: {
     'import/resolver': {

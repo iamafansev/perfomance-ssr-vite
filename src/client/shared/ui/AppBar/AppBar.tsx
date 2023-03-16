@@ -1,6 +1,9 @@
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
 
-export const AppBar = () => {
+import { Button } from '../Button/Button';
+
+export const AppBar: FC = () => {
   return (
     <nav
       style={{
@@ -10,8 +13,12 @@ export const AppBar = () => {
         padding: 20,
       }}
     >
-      <Link to="/">Home</Link>
-      <Link to="/pokemons">Pokemons</Link>
+      <Button component={Link} to="/">
+        Home
+      </Button>
+      <Button component={Link} to="/pokemons">
+        Pokemons
+      </Button>
     </nav>
   );
 };
