@@ -1,0 +1,153 @@
+.root {
+  font-size: 14;
+  font-weight: 400;
+  text-align: inherit;
+  color: #1a2027;
+  font-family: '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"';
+}
+
+.primaryColor {
+  color: #007fff;
+}
+
+.textPrimaryColor {
+  color: #1a2027;
+}
+
+.secondaryColor {
+  color: #9c27b0;
+}
+
+.textSecondaryColor {
+  color: #3e5060;
+}
+
+.errorColor {
+  color: #eb0014;
+}
+
+.h1Variant {
+  font-size: clamp(2.625rem, 1.2857rem + 3.5714vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1142857142857143;
+}
+
+.h2Variant {
+  font-size: clamp(1.5rem, 0.9643rem + 1.4286vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.2222222222222223;
+}
+
+.h3Variant {
+  font-size: 2.25rem;
+  letter-spacing: 0.2;
+  line-height: 1.2222222222222223;
+}
+
+.h4Variant {
+  font-size: 1.75rem;
+  letter-spacing: 0.2;
+  line-height: 1.5;
+}
+
+.h5Variant {
+  font-size: 1.5rem;
+  letter-spacing: 0.1;
+  line-height: 1.5;
+}
+
+.h6Variant {
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.subtitle1Variant {
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.3333333333333333;
+}
+
+.subtitle2Variant {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.57;
+}
+
+.body1Variant,
+.body2Variant {
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+
+.body1Variant {
+  font-size: 1rem;
+}
+
+.body2Variant {
+  font-size: 0.875rem;
+}
+
+.captionVariant {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.buttonVariant {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.75;
+  text-transform: initial;
+}
+
+.overlineVariant {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.inheritVariant {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+}
+
+.inheritAlign {
+  text-align: inherit;
+}
+
+.leftAlign {
+  text-align: left;
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+.rightAlign {
+  text-align: right;
+}
+
+.justifyAlign {
+  text-align: justify;
+}
+
+.noWrap {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gutterBottom {
+  margin-bottom: 0.35em;
+}
+
+.paragraph {
+  margin-bottom: 16px;
+}
