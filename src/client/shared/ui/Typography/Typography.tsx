@@ -29,6 +29,7 @@ export type Variant =
 export type TypographyTypeMap<P = object, D extends ElementType = 'span'> = {
   props: P & {
     align?: 'inherit' | 'left' | 'center' | 'right' | 'justify';
+    className?: string;
     children?: ReactNode;
     color?: 'primary' | 'textPrimary' | 'secondary' | 'textSecondary' | 'error';
     gutterBottom?: boolean;
@@ -68,7 +69,7 @@ export const Typography = forwardRef(function Typography<
   forwardedRef: ForwardedRef<HTMLElement>
 ) {
   const {
-    align = 'inherit',
+    align,
     className,
     component,
     color,

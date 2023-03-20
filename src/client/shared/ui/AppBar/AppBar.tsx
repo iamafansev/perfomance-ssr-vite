@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { Button } from 'client/shared/ui';
+import { Link } from 'client/shared/ui';
 
 export const AppBar: FC = () => {
   return (
@@ -13,12 +13,12 @@ export const AppBar: FC = () => {
         padding: 20,
       }}
     >
-      <Button component={RouterLink} to="/">
+      <Link component={RouterLink} to="/">
         Home
-      </Button>
-      <Button component={RouterLink} to="/pokemons">
+      </Link>
+      <Link component={RouterLink} to="/pokemons">
         Pokemons
-      </Button>
+      </Link>
     </nav>
   );
 };

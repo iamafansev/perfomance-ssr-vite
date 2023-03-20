@@ -1,3 +1,61 @@
 :root {
-  --color-dark: #242424;
+  --palette-primary-main: #1976d2;
+  --palette-primary-light: #42a5f5;
+  --palette-primary-dark: #1565c0;
+  --palette-primary-contrast-text: #fff;
+
+  --palette-secondary-main: #9c27b0;
+  --palette-secondary-light: #ba68c8;
+  --palette-secondary-dark: #7b1fa2;
+  --palette-secondary-contrast-text: #fff;
+
+  --palette-error-main: #d32f2f;
+  --palette-error-light: #ef5350;
+  --palette-error-dark: #c62828;
+  --palette-error-contrast-text: #fff;
+
+  --palette-text-primary: rgba(0, 0, 0, 0.87);
+  --palette-text-secondary: rgba(0, 0, 0, 0.6);
+  --palette-text-disabled: rgba(0, 0, 0, 0.38);
+  --palette-background-default: #fff;
+  --palette-background-paper: #fff;
+  --palette-divider: rgba(0, 0, 0, 0.12);
+
+  --palette-action-active: rgba(0, 0, 0, 0.54);
+  --palette-action-hover: rgba(0, 0, 0, 0.04);
+  --palette-action-selected: rgba(0, 0, 0, 0.08);
+  --palette-action-disabled: rgba(0, 0, 0, 0.26);
+  --palette-action-disabled-background: rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --palette-primary-main: #90caf9;
+    --palette-primary-light: #e3f2fd;
+    --palette-primary-dark: #42a5f5;
+    --palette-primary-contrast-text: rgba(0, 0, 0, 0.87);
+
+    --palette-secondary-main: #ce93d8;
+    --palette-secondary-light: #f3e5f5;
+    --palette-secondary-dark: #ab47bc;
+    --palette-secondary-contrast-text: rgba(0, 0, 0, 0.87);
+
+    --palette-error-main: #f44336;
+    --palette-error-light: #e57373;
+    --palette-error-dark: #d32f2f;
+    --palette-error-contrast-text: #fff;
+
+    --palette-text-primary: #fff;
+    --palette-text-secondary: rgba(255, 255, 255, 0.7);
+    --palette-text-disabled: rgba(255, 255, 255, 0.5);
+    --palette-background-default: #121212;
+    --palette-background-paper: #121212;
+    --palette-divider: rgba(255, 255, 255, 0.12);
+
+    --palette-action-active: #fff;
+    --palette-action-hover: rgba(255, 255, 255, 0.08);
+    --palette-action-selected: rgba(255, 255, 255, 0.16);
+    --palette-action-disabled: rgba(255, 255, 255, 0.3);
+    --palette-action-disabled-background: rgba(255, 255, 255, 0.12);
+  }
 }

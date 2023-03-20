@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { Helmet } from 'react-helmet-async';
 
+import { Typography } from 'client/shared/ui';
+
 import { PokemonListLazy } from './PockemonListLazy';
 
 export const Pokemons: FC = () => {
@@ -10,7 +12,7 @@ export const Pokemons: FC = () => {
         <title>Pockemons</title>
       </Helmet>
       <div style={{ textAlign: 'center' }}>
-        <h1>Pokemons</h1>
+        <Typography variant="h1">Pokemons</Typography>
         <PokemonListLazy />
       </div>
     </>

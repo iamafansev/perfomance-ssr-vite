@@ -5,17 +5,19 @@
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--palette-primary-main);
+  color: var(--palette-primary-contrast-text);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.25s;
 }
 
 .root:hover {
-  border-color: #646cff;
+  background-color: var(--palette-primary-dark);
 }
 
 .disabled {
-  background-color: #3a3a3a;
+  color: var(--palette-action-disabled);
+  background-color: var(--palette-action-disabled-background);
 }
 
 .fullWidth {
@@ -26,5 +28,5 @@
 }
 
 .root:focus {
-  outline: 4px auto #646cff;
+  outline: 4px auto var(--palette-primary-dark);
 }

@@ -1,8 +1,19 @@
-import { ElementType, ForwardedRef, ReactNode, Ref, forwardRef } from 'react';
+import {
+  ComponentProps,
+  ElementType,
+  ForwardedRef,
+  ReactNode,
+  Ref,
+  forwardRef,
+} from 'react';
 import { OverridableComponent, OverrideProps } from '@mui/types';
 import clsx from 'clsx';
 
+import { Typography } from 'client/shared/ui';
+
 import classes from './Link.module.css';
+
+type TypographyProps = ComponentProps<typeof Typography>;
 
 type OwnProps = {
   href?: string;
@@ -10,7 +21,7 @@ type OwnProps = {
   underline?: boolean;
   className?: string;
   children?: ReactNode;
-};
+} & Pick<TypographyProps, 'variant'>;
 
 type RootProps = Pick<OwnProps, 'href' | 'className' | 'to' | 'children'> & {
   ref: Ref<HTMLAnchorElement | HTMLButtonElement | HTMLElement>;
@@ -34,17 +45,27 @@ export const Link = forwardRef(function Link<
     HTMLAnchorElement | HTMLButtonElement | HTMLElement
   >
 ) {
-  const { children, className, underline, ...other } = props;
+  const {
+    children,
+    className,
+    underline,
+    variant = 'inherit',
+    ...other
+  } = props;
 
   const defaultElement = props.href || props.to ? 'a' : 'button';
   const Component: ElementType = props.component ?? defaultElement;
 
   const rootProps: RootProps = {
     ...other,
-    className: clsx(className, classes.root),
+    className: clsx(
+      className,
+      classes.root,
+      Component === 'button' && classes.asButtonBase
+    ),
     children,
     ref: forwardedRef,
   };
 
-  return <Component {...rootProps} />;
+  return <Typography component={Component} variant={variant} {...rootProps} />;
 }) as OverridableComponent<LinkTypeMap>;

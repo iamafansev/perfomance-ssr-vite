@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
+import { Typography, Button } from 'client/shared/ui';
+
 import { ReactComponent as ReactLogo } from './react.svg';
 
 import classes from './Home.module.css';
@@ -22,11 +24,15 @@ export const Home = () => {
             <ReactLogo className={classes.logo} />
           </a>
         </div>
-        <h1>Vite + React</h1>
+        <Typography variant="h1">Vite + React</Typography>
         <div className={classes.card}>
-          <button type="button" onClick={() => setCount((prev) => prev + 1)}>
+          <Button
+            component="button"
+            type="button"
+            onClick={() => setCount((prev) => prev + 1)}
+          >
             count is {count}
-          </button>
+          </Button>
         </div>
       </div>
     </>
