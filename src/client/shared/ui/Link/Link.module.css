@@ -1,0 +1,11 @@
+.root {
+  font-weight: 500;
+  color: #535bf2;
+  text-decoration: inherit;
+}
+
+@media (prefers-color-scheme: light) {
+  .root:hover {
+    color: #747bff;
+  }
+}
